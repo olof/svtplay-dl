@@ -50,14 +50,18 @@ class Options:
         self.password = None
 
 def get_media(url, options):
-    stream = service_handler(url)
-    if not stream:
-        url, stream = Generic().get(url)
+    service = service_handler(url)
+    if not service:
+        url, service = Generic().get(url)
         url = url.replace("&amp;", "&")
-    if not stream:
+    if not service:
         log.error("That site is not supported. Make a ticket or send a message")
         sys.exit(2)
 
+    for msg in service.messages():
+        print "Info: %s" % msg
+
+    # TODO: Add this to the service baseclass
     if not options.output or os.path.isdir(options.output):
         data = get_http_data(url)
         match = re.search(r"(?i)<title.*>\s*(.*?)\s*</title>", data)
@@ -75,7 +79,7 @@ def get_media(url, options):
                 else:
                     options.output = unicode(re.sub(r'[-\s]+', '-', title))
 
-    stream.get(options, url)
+    service.get(options, url)
 
 def setup_log(silent):
     if silent:
