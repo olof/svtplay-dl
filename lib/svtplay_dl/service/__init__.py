@@ -4,7 +4,18 @@ from __future__ import absolute_import
 import re
 
 class Service(object):
-    pass
+    def messages(self):
+        """
+        Should return of list of messages, like information about
+        service interruption and maintenance windows. This is
+        usually displayed to the user before trying to download
+        the media.
+
+        Service implementations that does not support this kind
+        of information can rely on this base class implementation
+        that simply returns an empty list.
+        """
+        return []
 
 from svtplay_dl.service.aftonbladet import Aftonbladet
 from svtplay_dl.service.dr import Dr
