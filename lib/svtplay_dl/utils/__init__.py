@@ -7,6 +7,7 @@ import logging
 import re
 import time
 import unicodedata
+from svtplay_dl.error import UIException
 
 try:
     import HTMLParser
@@ -27,6 +28,9 @@ from svtplay_dl.utils.urllib import build_opener, Request, HTTPCookieProcessor, 
 
 log = logging.getLogger('svtplay_dl')
 progress_stream = sys.stderr
+
+class GetHTTPDataException(UIException):
+    pass
 
 class NoRedirectHandler(HTTPRedirectHandler):
     def __init__(self):
@@ -66,16 +70,14 @@ def get_http_data(url, header=None, data=None, useragent=FIREFOX_UA,
     try:
         response = opener.open(request)
     except HTTPError as e:
-        log.error("Something wrong with that url")
-        log.error("Error code: %s", e.code)
-        sys.exit(5)
+        raise GetHTTPDataException(
+            "Something's wrong with that url: %s" % e.code)
     except URLError as e:
-        log.error("Something wrong with that url")
-        log.error("Error code: %s", e.reason)
-        sys.exit(5)
+        raise GetHTTPDataException(
+            "Something's wrong with that url: %s" % e.code)
     except ValueError as e:
-        log.error("Try adding http:// before the url")
-        sys.exit(5)
+        raise GetHTTPDataException("Invalid URL; try adding http:// to URL")
+
     if is_py3:
         data = response.read()
         try:

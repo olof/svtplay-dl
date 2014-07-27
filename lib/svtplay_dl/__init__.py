@@ -58,6 +58,13 @@ class Options:
         self.force_subtitle = False
         self.preferred = None
 
+def handle_ui_exception(exc, options):
+    if options.verbose:
+        raise exc
+    else:
+        log.error(exc.message)
+        sys.exit(2)
+
 def get_media(url, options):
 
     stream = service_handler(url)
@@ -106,8 +113,13 @@ def get_one_media(stream, options):
 
     videos = []
     subs = []
-    streams = stream.get(options)
-    if streams:
+
+    try:
+        streams = stream.get(options)
+
+        if not streams:
+            raise UIException("Can't find any streams for that url")
+
         for i in streams:
             if isinstance(i, VideoRetriever):
                 if options.preferred:
@@ -129,10 +141,7 @@ def get_one_media(stream, options):
             try:
                 stream.download()
             except UIException as e:
-                if options.verbose:
-                    raise e
-                log.error(e.message)
-                sys.exit(2)
+                handle_ui_exception(exc, options)
 
             if options.thumbnail:
                 if hasattr(stream, "get_thumbnail"):
@@ -144,8 +153,8 @@ def get_one_media(stream, options):
                 log.info("no thumb requested")
         else:
             log.error("Can't find any streams for that url")
-    else:
-        log.error("Can't find any streams for that url")
+    except UIException as exc:
+        handle_ui_exception(exc, options)
 
 
 def setup_log(silent, verbose=False):
