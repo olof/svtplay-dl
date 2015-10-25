@@ -113,7 +113,7 @@ class HDS(VideoRetriever):
             url = "%s/%sSeg1-Frag%s?%s" % (baseurl, self.url, start, querystring)
             if self.options.output != "-" and not self.options.silent:
                 eta.update(i)
-                progressbar(total, i, ''.join(["ETA: ", str(eta)]))
+                progressbar(total, i, eta.render())
             data = self.http.request("get", url, cookies=cookies)
             if data.status_code == 404:
                 break
@@ -125,7 +125,8 @@ class HDS(VideoRetriever):
 
         if self.options.output != "-":
             file_d.close()
-            progress_stream.write('\n')
+            if not self.options.silent:
+                progressbar(total, i, eta.render(), done=True)
 
 
 def readbyte(data, pos):

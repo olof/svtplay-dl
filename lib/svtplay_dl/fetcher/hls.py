@@ -96,7 +96,7 @@ class HLS(VideoRetriever):
 
             if self.options.output != "-" and not self.options.silent:
                 eta.increment()
-                progressbar(len(files), n, ''.join(['ETA: ', str(eta)]))
+                progressbar(len(files), n, eta.render())
                 n += 1
 
             data = self.http.request("get", item, cookies=cookies)
@@ -109,7 +109,8 @@ class HLS(VideoRetriever):
 
         if self.options.output != "-":
             file_d.close()
-            progress_stream.write('\n')
+            if not self.options.silent:
+                progressbar(len(files), n, eta.render(), done=True)
 
 
 def parsem3u(data):
