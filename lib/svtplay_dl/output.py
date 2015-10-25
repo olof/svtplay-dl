@@ -79,24 +79,29 @@ class ETA(object):
         return str(timedelta(seconds=int(elm_time * self.left)))
 
 
-def progress(byte, total, extra=""):
+def progress(byte, total, extra="", done=False):
     """ Print some info about how much we have downloaded """
     if total == 0:
         progresstr = "Downloaded %dkB bytes" % (byte >> 10)
         progress_stream.write(progresstr + '\r')
         return
-    progressbar(total, byte, extra)
+    progressbar(total, byte, extra, done)
 
 
-def progressbar(total, pos, msg=""):
+def progressbar(total, pos, msg="", done=False):
     """
     Given a total and a progress position, output a progress bar
     to stderr. It is important to not output anything else while
     using this, as it relies soley on the behavior of carriage
     return (\\r).
 
-    Can also take an optioal message to add after the
+    Can also take an optional message to add after the
     progressbar. It must not contain newlines.
+
+    Can optionally be passed a "done" parameter, indicating that
+    the progression has completed if true. A newline will be
+    written to the progress stream, and you will not be able to
+    update it again after this.
 
     The progress bar will look something like this:
 
@@ -115,6 +120,9 @@ def progressbar(total, pos, msg=""):
     fmt = "\r[" + fmt_width + "/" + fmt_width + "][%s] %s"
 
     progress_stream.write(fmt % (pos, total, bar, msg))
+
+    if done:
+        progress_stream.write("\n")
 
 
 def filename(options, stream):
