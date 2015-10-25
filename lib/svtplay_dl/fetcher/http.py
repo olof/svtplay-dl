@@ -36,4 +36,8 @@ class HTTP(VideoRetriever):
                     progress(bytes_so_far, total_size)
 
         if self.options.output != "-":
+            # Print a final progression update, to show that we're
+            # done.
+            if not self.options.silent:
+                progress(bytes_so_far, total_size)
             file_d.close()
