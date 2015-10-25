@@ -110,6 +110,9 @@ def progressbar(total, pos, msg="", done=False):
     Of course, the ETA part should be supplied be the calling
     function.
     """
+    # We can't progress further than total.
+    pos = min(total, pos)
+
     width = get_terminal_size()[0] - 35
     rel_pos = int(float(pos)/total*width)
     bar = ''.join(["=" * rel_pos, "." * (width - rel_pos)])
