@@ -64,6 +64,13 @@ class ETA(object):
         """
         return self.end - self.pos
 
+    def render(self):
+        """
+        Full string suitable for including in progress bars
+        and other output.
+        """
+        return 'ETA: %s' % str(self)
+
     def __str__(self):
         """
         returns: a time string of the format HH:MM:SS.
